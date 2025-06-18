@@ -46,7 +46,10 @@ class DDPM:
         # We want to add noise to the original data.
         # Think about the case when noise is not None.
         #########################################################
-        eps = None
+        if noise is not None:
+            eps = noise
+        else:
+            eps = torch.randn_like(x_0).to(self.device)
         #########################################################
         #                     End of TODO                       #
         #########################################################

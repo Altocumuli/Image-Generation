@@ -224,7 +224,32 @@ class CVAE(BaseModel):
         # 4. Calculate loss
         # 5. Backward pass & Optimizer step
         #########################################################
-        loss=None
+        # 1. Flatten the image
+        batch_size = x.size(0)
+        x_flat = x.view(batch_size, -1).to(self.device)
+        
+        # 2. Convert label to one-hot
+        y_onehot = torch.zeros(batch_size, self.label_size, device=self.device)
+        y_onehot.scatter_(1, y.unsqueeze(1).to(self.device), 1)
+        
+        # 3. Forward pass
+        recon_x, mu, logstd = self(x_flat, y_onehot)
+        
+        # 4. Calculate loss
+        # Reconstruction loss (binary cross entropy)
+        recon_loss = F.binary_cross_entropy(recon_x, x_flat, reduction='sum')
+        
+        # KL divergence loss
+        kl_loss = -0.5 * torch.sum(1 + logstd - mu.pow(2) - logstd.exp())
+        
+        # Total loss
+        loss = recon_loss + kl_loss
+        
+        # 5. Backward pass & Optimizer step
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
         return loss.item() / x.size(0)
         #########################################################
         #                     End of TODO                       #

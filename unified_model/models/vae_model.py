@@ -51,6 +51,8 @@ class CVAE(BaseModel):
             nn.ReLU(),
             nn.Linear(hidden_size, hidden_size),
             nn.ReLU(),
+            nn.Linear(hidden_size, hidden_size // 2),
+            nn.ReLU(),
         )
         
         # Output layers for mean and logstd
@@ -85,7 +87,9 @@ class CVAE(BaseModel):
             nn.ReLU(),
             nn.Linear(hidden_size, hidden_size),
             nn.ReLU(),
-            nn.Linear(hidden_size, self.img_dim),
+            nn.Linear(hidden_size, hidden_size * 2),  
+            nn.ReLU(),
+            nn.Linear(hidden_size * 2, self.img_dim),
             nn.Sigmoid()  # Output values between 0 and 1 for image pixels
         )
         #########################################################

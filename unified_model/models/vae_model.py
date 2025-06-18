@@ -39,7 +39,23 @@ class CVAE(BaseModel):
         # 3. The encoder can be a MLP
         # 4. The mean and logstd could be two seperate linear layers taking the output of the encoder as input.
         #########################################################
-        pass
+        # Image encoder (linear layer)
+        self.img_encoder = nn.Linear(self.img_dim, hidden_size)
+        
+        # Label encoder (linear layer)
+        self.label_encoder = nn.Linear(label_size, hidden_size)
+        
+        # Combined encoder MLP
+        self.encoder = nn.Sequential(
+            nn.Linear(hidden_size * 2, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, hidden_size),
+            nn.ReLU(),
+        )
+        
+        # Output layers for mean and logstd
+        self.fc_mean = nn.Linear(hidden_size, latent_size)
+        self.fc_logstd = nn.Linear(hidden_size, latent_size)
         #########################################################
         #                     End of TODO                       #
         #########################################################
@@ -57,7 +73,21 @@ class CVAE(BaseModel):
         # 3. The decoder can be a MLP
         # 4. The decoder should have an output size of the image size.
         #########################################################
-        pass
+        # Latent vector decoder
+        self.z_decoder = nn.Linear(latent_size, hidden_size)
+        
+        # Label decoder
+        self.label_decoder = nn.Linear(label_size, hidden_size)
+        
+        # Combined decoder MLP
+        self.decoder = nn.Sequential(
+            nn.Linear(hidden_size * 2, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, hidden_size),
+            nn.ReLU(),
+            nn.Linear(hidden_size, self.img_dim),
+            nn.Sigmoid()  # Output values between 0 and 1 for image pixels
+        )
         #########################################################
         #                     End of TODO                       #
         #########################################################

@@ -56,8 +56,8 @@ class CVAE(BaseModel):
         )
         
         # Output layers for mean and logstd
-        self.fc_mean = nn.Linear(hidden_size, latent_size)
-        self.fc_logstd = nn.Linear(hidden_size, latent_size)
+        self.fc_mean = nn.Linear(hidden_size // 2, latent_size)
+        self.fc_logstd = nn.Linear(hidden_size // 2, latent_size)
         #########################################################
         #                     End of TODO                       #
         #########################################################
